@@ -1,46 +1,25 @@
-// models/taskModel.js
-import fs from "fs";
+// Simulation d'une base de données en mémoire
+let tasks = [
+  { id: 1, title: "Faire les courses" },
+  { id: 2, title: "Apprendre Express" },
+];
 
-const DATA_FILE = "./tasks.json";
+module.exports = {
+  getAllTasks: () => tasks,
 
-function loadTasks() {
-  try {
-    const data = fs.readFileSync(DATA_FILE, "utf8");
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
+  addTask: (title) => {
+    const newTask = {
+      id: tasks.length ? tasks[tasks.length - 1].id + 1 : 1,
+      title,
+    };
+    tasks.push(newTask);
+    return newTask;
+  },
 
-function saveTasks(tasks) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(tasks, null, 2));
-}
-
-export function getAllTasks() {
-  return loadTasks();
-}
-
-export function addTask(title) {
-  const tasks = loadTasks();
-  const newTask = { id: Date.now(), title, done: false };
-  tasks.push(newTask);
-  saveTasks(tasks);
-  return newTask;
-}
-
-export function deleteTask(id) {
-  let tasks = loadTasks();
-  tasks = tasks.filter(t => t.id !== id);
-  saveTasks(tasks);
-}
-
-export function toggleTask(id) {
-  const tasks = loadTasks();
-  const task = tasks.find(t => t.id === id);
-  if (task) {
-    task.done = !task.done;
-    saveTasks(tasks);
-    return task;
-  }
-  return null;
-}
+  removeTask: (id) => {
+    const index = tasks.findIndex((t) => t.id === id);
+    if (index === -1) return false;
+    tasks.splice(index, 1);
+    return true;
+  },
+};
